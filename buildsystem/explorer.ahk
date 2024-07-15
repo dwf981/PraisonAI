@@ -55,8 +55,9 @@ OnPraisonAI:
             if "!should_install!" equ "1" `(
                 call e remove
                 call e || goto :error
-                cd "%ProjectDir%" || goto :error
-                pip install -e . || goto :error
+                pip install -e .[code] || goto :error
+                rem pip install poetry || goto :error
+                rem poetry install -E code || goto :error
                 call conda.bat deactivate
             `)
             call e || goto :error
@@ -64,5 +65,5 @@ OnPraisonAI:
         `)
     )
     Options := { Visible: "ConEmu", Pause: true, Admin: true }
-    RunBat( Options, StripBat(BatchScript) ) 
+    RunBat( Options, StripBat(BatchScript) )
 return
