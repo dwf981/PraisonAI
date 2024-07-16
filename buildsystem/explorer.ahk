@@ -44,6 +44,9 @@ OnPraisonAI:
     SplitPath, ProjectDir,, ProjectDir
 
     ShiftPressed := GetKeyState("Shift","P")
+    if ("" = (ProjectPath := SelectFolderEx(ProjectDir, "Select Project Folder")))
+        return
+
     BatchScript =
     (
 
@@ -61,6 +64,7 @@ OnPraisonAI:
                 call conda.bat deactivate
             `)
             call e || goto :error
+            cd "%ProjectPath%" || goto :error
             praisonai code
         `)
     )
