@@ -23,6 +23,7 @@
     AddMenu( "ProjectMenu" )
     AddMenu( "ProjectMenu", "&Sync with Upstream`tS", "OnSyncWithUpstream", ConEmuPath )
     AddMenu( "ProjectMenu", "&Praison AI...`tP", "OnPraisonAI", ResDir "github.ico" )
+    AddMenu( "ProjectMenu", "En&vironment Shell...`tV", "OnEnvironmentShell", ConEmuPath )
     AddMenu( "ProjectMenu" )
     AddMenuItemEditProjectMenu("ProjectMenu")
     ShowMenu( "ProjectMenu" )
@@ -59,13 +60,38 @@ OnPraisonAI:
                 call e remove
                 call e || goto :error
                 pip install -e .[code] || goto :error
-                rem pip install poetry || goto :error
-                rem poetry install -E code || goto :error
                 call conda.bat deactivate
             `)
             call e || goto :error
             cd "%ProjectPath%" || goto :error
             praisonai code
+        `)
+    )
+    Options := { Visible: "ConEmu", Pause: true, Admin: true }
+    RunBat( Options, StripBat(BatchScript) )
+return
+
+OnEnvironmentShell:
+    ProjectDir := GetProjectDir()
+    SplitPath, A_LineFile,, ProjectDir
+    SplitPath, ProjectDir,, ProjectDir
+    ShiftPressed := GetKeyState("Shift","P")
+    BatchScript =
+    (
+
+        cd "%ProjectDir%" || goto :error
+        if "!errorlevel!" equ "0" `(
+            set should_install=%ShiftPressed%
+            call e exist >nul 2>&1
+            if "!errorlevel!" equ "1" set should_install=1
+            if "!should_install!" equ "1" `(
+                call e remove
+                call e || goto :error
+                pip install -e .[code] || goto :error
+                call conda.bat deactivate
+            `)
+            call e || goto :error
+            cmd
         `)
     )
     Options := { Visible: "ConEmu", Pause: true, Admin: true }
