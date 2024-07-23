@@ -40,34 +40,28 @@ OnSyncWithUpstream:
 return
 
 OnPraisonAI:
+    Subcommand := GetKeyState("Shift","P") ? "chat" : "code"
     ProjectDir := GetProjectDir()
-    SplitPath, A_LineFile,, ProjectDir
-    SplitPath, ProjectDir,, ProjectDir
-
-    ShiftPressed := GetKeyState("Shift","P")
-    if ("" = (ProjectPath := SelectFolderEx(ProjectDir, "Select Project Folder")))
-        return
+    SplitPath, A_LineFile,, PraisonDir
+    SplitPath, PraisonDir,, PraisonDir
 
     BatchScript =
     (
 
-        cd "%ProjectDir%" || goto :error
-        if "!errorlevel!" equ "0" `(
-            set should_install=%ShiftPressed%
-            call e exist >nul 2>&1
-            if "!errorlevel!" equ "1" set should_install=1
-            if "!should_install!" equ "1" `(
-                call e remove
-                call e || goto :error
-                pip install -e .[code] || goto :error
-                call conda.bat deactivate
-            `)
-            call e || goto :error
-            cd "%ProjectPath%" || goto :error
-            praisonai code
+        call e exist env PraisonAI >nul 2>&1
+        if "!errorlevel!" equ "1" `(
+            cd "%PraisonDir%" || goto :error
+            call e env PraisonAI || goto :error
+            pip install -e .[code,chat] || goto :error
+            call conda.bat deactivate
         `)
+        cd "%ProjectDir%" || goto :error
+        call e env PraisonAI || goto :error
+        echo Running !yellow!praisonai %Subcommand%!nc! in !green!%ProjectDir%!nc! ...
+        echo.
+        praisonai %Subcommand%
     )
-    Options := { Visible: "ConEmu", Pause: true, Admin: true }
+    Options := { Visible: "ConEmu", Pause: true, Admin: true, Colors: true }
     RunBat( Options, StripBat(BatchScript) )
 return
 
@@ -87,7 +81,7 @@ OnEnvironmentShell:
             if "!should_install!" equ "1" `(
                 call e remove
                 call e || goto :error
-                pip install -e .[code] || goto :error
+                pip install -e .[code,chat] || goto :error
                 call conda.bat deactivate
             `)
             call e || goto :error
