@@ -11,6 +11,7 @@
     AddMenu( "ProjectMenu", "&Sync with Upstream`tS", "OnSyncWithUpstream", ConEmuPath )
     AddMenu( "ProjectMenu", "&Praison AI...`tP", "OnPraisonAI", ResDir "github.ico" )
     AddMenu( "ProjectMenu", "En&vironment Shell...`tV", "OnEnvironmentShell", ConEmuPath )
+    AddMenuItemToPdf("ProjectMenu")
     AddMenu( "ProjectMenu" )
     AddMenuItemEditProjectMenu("ProjectMenu")
     ShowMenu( "ProjectMenu" )
@@ -49,7 +50,7 @@ OnPraisonAI:
         praisonai %Subcommand%
     )
     Options := { Visible: "ConEmu", Pause: true, Admin: true, Colors: true }
-    RunBat( Options, StripBat(BatchScript) )
+    Run_Bat( Options, StripBat(BatchScript) )
 return
 
 OnEnvironmentShell:
@@ -76,5 +77,5 @@ OnEnvironmentShell:
         `)
     )
     Options := { Visible: "ConEmu", Pause: true, Admin: true }
-    RunBat( Options, StripBat(BatchScript) )
+    Run_Bat( Options, StripBat(BatchScript) )
 return
